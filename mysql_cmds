@@ -1,0 +1,62 @@
+create database dreamhome;
+use dreamhome;
+
+CREATE TABLE Branch (
+    BranchID INT PRIMARY KEY AUTO_INCREMENT,
+    BranchName VARCHAR(100),
+    Address VARCHAR(255),
+    Phone VARCHAR(15)
+);
+
+CREATE TABLE Staff (
+    StaffID INT PRIMARY KEY AUTO_INCREMENT,
+    Name VARCHAR(100),
+    Position VARCHAR(50),
+    Salary DECIMAL(10,2),
+    BranchID INT,
+    FOREIGN KEY (BranchID) REFERENCES Branch(BranchID)
+);
+
+CREATE TABLE Owner (
+    OwnerID INT PRIMARY KEY AUTO_INCREMENT,
+    Name VARCHAR(100),
+    ContactInfo VARCHAR(255)
+);
+
+CREATE TABLE Property (
+    PropertyID INT PRIMARY KEY AUTO_INCREMENT,
+    Address VARCHAR(255),
+    Rent DECIMAL(10,2),
+    OwnerID INT,
+    BranchID INT,
+    FOREIGN KEY (OwnerID) REFERENCES Owner(OwnerID),
+    FOREIGN KEY (BranchID) REFERENCES Branch(BranchID)
+);
+
+CREATE TABLE Client (
+    ClientID INT PRIMARY KEY AUTO_INCREMENT,
+    Name VARCHAR(100),
+    ContactInfo VARCHAR(255),
+    Preferences TEXT
+);
+
+CREATE TABLE Viewing (
+    ViewingID INT PRIMARY KEY AUTO_INCREMENT,
+    ClientID INT,
+    PropertyID INT,
+    Date DATE,
+    Comments TEXT,
+    FOREIGN KEY (ClientID) REFERENCES Client(ClientID),
+    FOREIGN KEY (PropertyID) REFERENCES Property(PropertyID)
+);
+
+CREATE TABLE Lease (
+    LeaseID INT PRIMARY KEY AUTO_INCREMENT,
+    ClientID INT,
+    PropertyID INT,
+    StartDate DATE,
+    EndDate DATE,
+    MonthlyRent DECIMAL(10,2),
+    FOREIGN KEY (ClientID) REFERENCES Client(ClientID),
+    FOREIGN KEY (PropertyID) REFERENCES Property(PropertyID)
+);
