@@ -60,3 +60,46 @@ CREATE TABLE Lease (
     FOREIGN KEY (ClientID) REFERENCES Client(ClientID),
     FOREIGN KEY (PropertyID) REFERENCES Property(PropertyID)
 );
+
+-- Insert sample branches
+INSERT INTO Branch (BranchName, Address, Phone)
+VALUES 
+  ('Downtown Branch', '123 Main St, Cityville', '555-1234'),
+  ('Uptown Branch', '456 High St, Cityville', '555-5678');
+
+-- Insert sample staff (using BranchID from above)
+INSERT INTO Staff (Name, Position, Salary, BranchID)
+VALUES 
+  ('Alice Smith', 'Manager', 60000.00, 1),
+  ('Bob Johnson', 'Agent', 40000.00, 1),
+  ('Charlie Davis', 'Agent', 40000.00, 2);
+
+-- Insert sample owners
+INSERT INTO Owner (Name, ContactInfo)
+VALUES 
+  ('John Doe', 'john@example.com'),
+  ('Jane Roe', 'jane@example.com');
+
+-- Insert sample properties (using OwnerID and BranchID from above)
+INSERT INTO Property (Address, Rent, OwnerID, BranchID)
+VALUES 
+  ('789 Elm St, Cityville', 1200.00, 1, 1),
+  ('101 Maple Ave, Cityville', 1500.00, 2, 2);
+
+-- Insert sample clients
+INSERT INTO Client (Name, ContactInfo, Preferences)
+VALUES 
+  ('Michael Brown', 'michael@example.com', '2 bedroom apartment'),
+  ('Sarah Wilson', 'sarah@example.com', 'House with garden');
+
+-- Insert sample viewings (using ClientID and PropertyID)
+INSERT INTO Viewing (ClientID, PropertyID, Date, Comments)
+VALUES 
+  (1, 1, '2025-04-15', 'Liked the place, need to check budget.'),
+  (2, 2, '2025-04-20', 'Too expensive for my needs.');
+
+-- Insert sample leases (using ClientID and PropertyID)
+INSERT INTO Lease (ClientID, PropertyID, StartDate, EndDate, MonthlyRent)
+VALUES 
+  (1, 1, '2025-05-01', '2026-05-01', 1200.00),
+  (2, 2, '2025-06-01', '2026-06-01', 1500.00);
