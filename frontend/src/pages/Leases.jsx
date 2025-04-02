@@ -16,7 +16,7 @@ const Leases = () => {
   };
 
   return (
-    <Container>
+    <Container className="py-30">
       <Button 
         variant="contained" 
         onClick={handleOpen}

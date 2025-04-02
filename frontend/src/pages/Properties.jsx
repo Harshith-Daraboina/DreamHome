@@ -7,12 +7,12 @@ const Properties = () => {
   const [refresh, setRefresh] = useState(false);
 
   return (
-    <div className="container mx-auto px-4 py-8">
+    <div className="container mx-auto px-4 py-35">
       <div className="flex justify-between items-center mb-6">
         <h1 className="text-3xl font-bold text-gray-800">Properties</h1>
         <button
           onClick={() => setOpen(true)}
-          className="bg-blue-500 hover:bg-blue-600 text-white font-bold py-2 px-4 rounded"
+          className="bg-blue-600 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded"
         >
           Add New Property
         </button>
@@ -21,10 +21,11 @@ const Properties = () => {
       <PropertyList refresh={refresh} />
 
       {open && (
-        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-4">
-          <div className="bg-white rounded-lg w-full max-w-2xl">
+        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-4 z-50">
+          <div className="bg-white rounded-lg w-full max-w-md">
             <div className="p-6">
               <div className="flex justify-between items-center mb-4">
+                
                 <h2 className="text-xl font-bold">Add New Property</h2>
                 <button 
                   onClick={() => setOpen(false)}

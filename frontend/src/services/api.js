@@ -2,9 +2,11 @@ import axios from 'axios';
 
 const API_URL = 'http://localhost:5000';
 
+
 // Properties
 export const getProperties = () => axios.get(`${API_URL}/properties`);
 export const getProperty = (id) => axios.get(`${API_URL}/properties/${id}`);
+export const searchProperties = (query) => axios.get(`${API_URL}/properties/search`, { params: { q: query } });
 export const createProperty = (property) => axios.post(`${API_URL}/properties`, property);
 export const updateProperty = (id, property) => axios.put(`${API_URL}/properties/${id}`, property);
 export const deleteProperty = (id) => axios.delete(`${API_URL}/properties/${id}`);
@@ -17,6 +19,13 @@ export const deleteBranch = (id) => axios.delete(`${API_URL}/branches/${id}`);
 
 // Staff
 export const getStaff = () => axios.get(`${API_URL}/staff`);
+// src/services/api.js
+export const getStaffByBranch = (branchId) => {
+    console.log(branchId);
+    return axios.get(`${API_URL}/staff`, {
+      params: { branchId }  // Make sure this matches your backend parameter name
+    });
+  };
 export const createStaff = (staff) => axios.post(`${API_URL}/staff`, staff);
 export const updateStaff = (id, staff) => axios.put(`${API_URL}/staff/${id}`, staff);
 export const deleteStaff = (id) => axios.delete(`${API_URL}/staff/${id}`);

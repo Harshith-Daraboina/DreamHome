@@ -16,7 +16,7 @@ const Viewings = () => {
   };
 
   return (
-    <Container>
+    <Container className='container mx-auto px-4 py-30'>
       <Button 
         variant="contained" 
         onClick={handleOpen}

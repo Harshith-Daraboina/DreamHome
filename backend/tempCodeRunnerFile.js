@@ -1,6 +1,6 @@
 require('dotenv').config();
 const express = require('express');
-const mysql = require('mysql2/promise');
+const mysql = require('mysql2/promise'); // Using mysql2/promise for async/await
 const cors = require('cors');
 
 const app = express();
@@ -26,8 +26,18 @@ async function testConnection() {
         connection.release();
     } catch (err) {
         console.error("Database connection failed:", err.stack);
-        process.exit(1);
+        process.exit(1); // Exit if we can't connect to DB
     }
+}
+
+// Initialize the server
+async function initializeServer() {
+    await testConnection();
+    
+    const PORT = process.env.PORT || 5000;
+    app.listen(PORT, () => {
+        console.log(`Server running on port ${PORT}`);
+    });
 }
 
 // Helper function for database queries
@@ -58,31 +68,12 @@ app.get('/properties', async (req, res) => {
     }
 });
 
-// Property Search Endpoint
-app.get('/properties/search', async (req, res) => {
-    try {
-        const searchQuery = req.query.q || '';
-        const properties = await query(`
-            SELECT PropertyID, Address, Type, Rent, Description 
-            FROM Property
-            WHERE Address LIKE ? OR Type LIKE ? OR Description LIKE ?
-            LIMIT 10
-        `, [`%${searchQuery}%`, `%${searchQuery}%`, `%${searchQuery}%`]);
-        res.json(properties);
-    } catch (err) {
-        console.error('Search error:', err);
-        res.status(500).json({ error: 'Search failed' });
-    }
-});
-
 app.post('/properties', async (req, res) => {
     try {
-        const { Address, Rent, Type, Bedrooms, Bathrooms, Area, Description, OwnerID, BranchID } = req.body;
+        const { Address, Rent, OwnerID, BranchID } = req.body;
         const result = await query(
-            `INSERT INTO Property 
-            (Address, Rent, Type, Bedrooms, Bathrooms, Area, Description, OwnerID, BranchID) 
-            VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)`,
-            [Address, Rent, Type, Bedrooms, Bathrooms, Area, Description, OwnerID, BranchID]
+            'INSERT INTO Property (Address, Rent, OwnerID, BranchID) VALUES (?, ?, ?, ?)',
+            [Address, Rent, OwnerID, BranchID]
         );
         res.status(201).json({ id: result.insertId });
     } catch (err) {
@@ -92,14 +83,7 @@ app.post('/properties', async (req, res) => {
 
 app.get('/properties/:id', async (req, res) => {
     try {
-        const property = await query(`
-            SELECT p.*, o.Name AS OwnerName, b.BranchName 
-            FROM Property p
-            LEFT JOIN Owner o ON p.OwnerID = o.OwnerID
-            LEFT JOIN Branch b ON p.BranchID = b.BranchID
-            WHERE p.PropertyID = ?
-        `, [req.params.id]);
-        
+        const property = await query('SELECT * FROM Property WHERE PropertyID = ?', [req.params.id]);
         if (property.length === 0) {
             return res.status(404).json({ error: 'Property not found' });
         }
@@ -111,13 +95,10 @@ app.get('/properties/:id', async (req, res) => {
 
 app.put('/properties/:id', async (req, res) => {
     try {
-        const { Address, Rent, Type, Bedrooms, Bathrooms, Area, Description, OwnerID, BranchID } = req.body;
+        const { Address, Rent, OwnerID, BranchID } = req.body;
         await query(
-            `UPDATE Property SET 
-            Address = ?, Rent = ?, Type = ?, Bedrooms = ?, 
-            Bathrooms = ?, Area = ?, Description = ?, OwnerID = ?, BranchID = ?
-            WHERE PropertyID = ?`,
-            [Address, Rent, Type, Bedrooms, Bathrooms, Area, Description, OwnerID, BranchID, req.params.id]
+            'UPDATE Property SET Address = ?, Rent = ?, OwnerID = ?, BranchID = ? WHERE PropertyID = ?',
+            [Address, Rent, OwnerID, BranchID, req.params.id]
         );
         res.json({ message: 'Property updated successfully' });
     } catch (err) {
@@ -172,20 +153,14 @@ app.get('/branches/:id', async (req, res) => {
 // Staff Routes
 app.get('/staff', async (req, res) => {
     try {
-        const { branchId } = req.query;
-        let sql = 'SELECT * FROM Staff';
-        let params = [];
-        
-        if (branchId) {
-            sql += ' WHERE BranchID = ?';
-            params = [branchId];
-        }
-        
-        const staff = await query(sql, params);
+        const staff = await query(`
+            SELECT s.*, b.BranchName 
+            FROM Staff s
+            LEFT JOIN Branch b ON s.BranchID = b.BranchID
+        `);
         res.json(staff);
     } catch (err) {
-        console.error('Error fetching staff:', err);
-        res.status(500).json({ error: 'Internal server error' });
+        res.status(500).json({ error: err.message });
     }
 });
 
@@ -313,16 +288,7 @@ app.use((err, req, res, next) => {
     res.status(500).json({ error: 'Something went wrong!' });
 });
 
-// Initialize and start the server
-async function initializeServer() {
-    await testConnection();
-    
-    const PORT = process.env.PORT || 3000;
-    app.listen(PORT, () => {
-        console.log(`Server running on port ${PORT}`);
-    });
-}
-
+// Start the server
 initializeServer().catch(err => {
     console.error('Server initialization failed:', err);
     process.exit(1);

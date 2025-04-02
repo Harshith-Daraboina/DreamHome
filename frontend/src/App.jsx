@@ -8,6 +8,10 @@ import Owners from './pages/Owners';
 import Clients from './pages/Clients';
 import Viewings from './pages/Viewings';
 import Leases from './pages/Leases';
+import StaffPortal from './pages/staff-portal';
+import Customerportal from './pages/customerportal';
+import PropertyDetails from './pages/PropertyDetails';
+import About from './pages/about';
 
 function App() {
   return (
@@ -17,7 +21,7 @@ function App() {
         <Navbar />
 
         {/* Main content grows to fill space */}
-        <main className="flex-grow container mx-auto px-4 py-8">
+        <main className="flex flex-col min-h-screen w-full">
           <Routes>
             <Route path="/" element={<Home />} />
             <Route path="/properties" element={<Properties />} />
@@ -27,6 +31,10 @@ function App() {
             <Route path="/clients" element={<Clients />} />
             <Route path="/viewings" element={<Viewings />} />
             <Route path="/leases" element={<Leases />} />
+            <Route path="/staff-portal" element={<StaffPortal />} />
+            <Route path="/customer-portal" element={<Customerportal />} />
+            <Route path="/properties/:id" element={<PropertyDetails />} />
+            <Route path="/about" element={<About />} />
           </Routes>
         </main>
 
